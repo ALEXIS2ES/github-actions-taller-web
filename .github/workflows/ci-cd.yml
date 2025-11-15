@@ -2,3 +2,20 @@ name: Pipeline CI/CD - Web App
 on: 
  push: 
   branches: [ main ]
+jobs:
+  ci_test_build:
+   runs-on: ubuntu-latest 
+
+   steps:
+     - name: 1. Descargar Código de Express
+       uses: actions/checkout@v4
+       
+     - name: 2. Configurar Node.js (v20)
+       uses: actions/setup-node@v4
+       with:
+         node-version: '20.x'
+         
+     - name: 3. Instalar Dependencias (npm ci)
+       run: npm ci
+     - name: 4. Ejecutar Pruebas de Endpoints (Jest/Supertest)
+       run: npm test
