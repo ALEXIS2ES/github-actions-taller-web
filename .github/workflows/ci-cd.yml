@@ -1,0 +1,4 @@
+name: Pipeline CI/CD - Web App 
+on: 
+ push: 
+  branches: [ main ]
