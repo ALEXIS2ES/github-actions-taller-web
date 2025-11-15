@@ -1,0 +1,25 @@
+{
+  "name": "github-actions-taller-web",
+  "version": "1.0.0",
+  "description": "Plantilla de Express para Taller de GitHub Actions (CI/CD)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "express",
+    "ci",
+    "cd",
+    "github-actions"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  }
+}
