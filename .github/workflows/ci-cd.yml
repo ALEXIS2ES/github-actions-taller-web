@@ -63,9 +63,10 @@ jobs:
         run: npm ci
 
      # TAREA 13 - Paso 9: Despliegue Real (Vercel)
-      - name: 3. Despliegue a Vercel
-        # SOLUCIÓN CLAVE: Se añade --yes para confirmar el despliegue automáticamente
-        run: npx vercel deploy --prebuilt --token ${{ secrets.NEWTOK }} --yes 
+      - name: 3. Despliegue a Vercel (FINAL)
+        # SOLUCIÓN CLAVE: Se elimina --prebuilt (que requiere una carpeta .vercel/output)
+        # y se añade --prod para forzar el despliegue a producción.
+        run: npx vercel deploy --token ${{ secrets.NEWTOK }} --yes --prod
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }} 
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
