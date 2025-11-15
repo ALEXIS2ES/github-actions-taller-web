@@ -2,7 +2,9 @@ name: Pipeline CI/CD - Web App
 on:
   push:
     branches: [ main ]
+
 jobs:
+  # Job de Integración Continua (CI) y Pruebas
   ci_test_build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -26,35 +28,42 @@ jobs:
       - name: 4. Ejecutar Pruebas de Endpoints (Jest/Supertest)
         run: npm test
 
-      # --- Tarea 11: Ejecutar el Build (Simulado) ---
-      - name: 5. Ejecutar Build (Simulado)
+      # TAREA 11 - Paso 3: Ejecutar el Build (Simulado y Limpieza)
+      - name: 5. Ejecutar Build (Simulado) y Limpiar Dependencias
         run: |
-          echo "Simulando Build: Verificando que todos los archivos necesarios están listos..."
-          ls -l
-
-      # --- Tarea 11: Subir el Artifact ---
+          echo "Build simulado OK. Eliminando dependencias grandes para el Artifact..."
+          rm -rf node_modules # Eliminación en Linux/macOS
+        if: runner.os != 'Windows'
+        
+      # TAREA 11 - Paso 4: Subir el Artifact (Solo código fuente)
       - name: 6. Subir Artifact para Despliegue
         uses: actions/upload-artifact@v4
         with:
           name: web-app-package
-          path: . # El punto (.) sube la carpeta raíz completa como el artifact
+          path: . # Sube el contenido de la carpeta raíz (sin node_modules)
 
+  # Job de Despliegue Continuo (CD) a Vercel
   deploy_app:
+    # TAREA 13 - Paso 7: Definir Dependencia
     runs-on: ubuntu-latest
-    needs: [ci_test_build]
+    needs: [ci_test_build] # Solo se ejecuta si el CI (pruebas/build) fue exitoso
 
     steps:
-      # Este job debería usar el artifact subido, pero por ahora se mantiene el checkout.
-      # Para CD real, el primer paso sería actions/download-artifact.
-      - name: 1. Descargar Código para CD
-        uses: actions/checkout@v4
-      
-      - name: 2. Ejecutar Simulación de Despliegue a Producción
-        run: |
-          echo "=========================================="
-          echo "CI OK. Iniciando Despliegue a Producción..."
-          echo "TOKEN de autenticación utilizado: $DEPLOY_TOKEN_VAR"
-          echo "📦 Aplicación Express desplegada con éxito!"
-          echo "=========================================="
+      # TAREA 13 - Paso 8: Descargar el Artifact
+      - name: 1. Descargar Artifact (web-app-package)
+        uses: actions/download-artifact@v4
+        with:
+          name: web-app-package
+          path: .
+          
+      # Las dependencias fueron excluidas del Artifact, deben reinstalarse en el entorno de Despliegue.
+      - name: 2. Instalar Dependencias (npm ci)
+        run: npm ci
+
+      # TAREA 13 - Paso 9: Despliegue Real (Vercel)
+      - name: 3. Despliegue a Vercel
+        run: npx vercel deploy --prebuilt --token ${{ secrets.VERCEL_TOKEN }}
         env:
-          DEPLOY_TOKEN_VAR: ${{ secrets.FAKE_DEPLOY_TOKEN }}
+          # Es buena práctica incluir estos IDs como secretos de GitHub
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
