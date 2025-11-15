@@ -35,12 +35,14 @@ jobs:
           rm -rf node_modules # Eliminación en Linux/macOS
         if: runner.os != 'Windows'
         
-      # TAREA 11 - Paso 4: Subir el Artifact (Solo código fuente)
       - name: 6. Subir Artifact para Despliegue
         uses: actions/upload-artifact@v4
         with:
           name: web-app-package
-          path: . # Sube el contenido de la carpeta raíz (sin node_modules)
+          path: .
+          # SOLUCIÓN CLAVE: Permite que las ejecuciones de la matriz (Matrix)
+          # sobrescriban el artifact creado por una ejecución anterior.
+          overwrite: true
 
   # Job de Despliegue Continuo (CD) a Vercel
   deploy_app:
