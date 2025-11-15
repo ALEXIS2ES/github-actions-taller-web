@@ -64,7 +64,7 @@ jobs:
 
       # TAREA 13 - Paso 9: Despliegue Real (Vercel)
       - name: 3. Despliegue a Vercel
-        run: npx vercel deploy --prebuilt --token ${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy --prebuilt --token ${{ secrets.NEWTOK }}
         env:
           # Es buena práctica incluir estos IDs como secretos de GitHub
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
