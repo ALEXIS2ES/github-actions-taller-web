@@ -23,3 +23,21 @@ jobs:
        
      - name: 4. Ejecutar Pruebas de Endpoints (Jest/Supertest)
        run: npm test
+  deploy_app:
+    runs-on: ubuntu-latest
+    needs: [ci_test_build]
+    
+    steps:
+     - name: 1. Descargar Código para CD
+       uses: actions/checkout@v4
+       
+     - name: 2. Ejecutar Simulación de Despliegue a Producción
+       run: |
+         echo "=========================================="
+         echo "CI OK. Iniciando Despliegue a Producción..."
+         echo "TOKEN de autenticación utilizado: $DEPLOY_TOKEN_VAR"
+         echo "📦 Aplicación Express desplegada con éxito!"
+         echo "=========================================="
+       env:
+         DEPLOY_TOKEN_VAR: ${{ secrets.FAKE_DEPLOY_TOKEN }}
+ 
