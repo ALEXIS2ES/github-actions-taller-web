@@ -4,7 +4,6 @@ on:
     branches: [ main ]
 
 jobs:
-  # Job de Integración Continua (CI) y Pruebas
   ci_test_build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -28,11 +27,10 @@ jobs:
       - name: 4. Ejecutar Pruebas de Endpoints (Jest/Supertest)
         run: npm test
 
-      # TAREA 11 - Paso 3: Ejecutar el Build (Simulado y Limpieza)
       - name: 5. Ejecutar Build (Simulado) y Limpiar Dependencias
         run: |
           echo "Build simulado OK. Eliminando dependencias grandes para el Artifact..."
-          rm -rf node_modules # Eliminación en Linux/macOS
+          rm -rf node_modules 
         if: runner.os != 'Windows'
         
       - name: 6. Subir Artifact para Despliegue
@@ -40,32 +38,27 @@ jobs:
         with:
           name: web-app-package
           path: .
-          # SOLUCIÓN CLAVE: Permite que las ejecuciones de la matriz (Matrix)
-          # sobrescriban el artifact creado por una ejecución anterior.
+        
           overwrite: true
 
-  # Job de Despliegue Continuo (CD) a Vercel
   deploy_app:
-    # TAREA 13 - Paso 7: Definir Dependencia
+    
     runs-on: ubuntu-latest
-    needs: [ci_test_build] # Solo se ejecuta si el CI (pruebas/build) fue exitoso
+    needs: [ci_test_build] 
 
     steps:
-      # TAREA 13 - Paso 8: Descargar el Artifact
+      
       - name: 1. Descargar Artifact (web-app-package)
         uses: actions/download-artifact@v4
         with:
           name: web-app-package
           path: .
           
-      # Las dependencias fueron excluidas del Artifact, deben reinstalarse en el entorno de Despliegue.
       - name: 2. Instalar Dependencias (npm ci)
         run: npm ci
 
-     # TAREA 13 - Paso 9: Despliegue Real (Vercel)
       - name: 3. Despliegue a Vercel (FINAL)
-        # SOLUCIÓN CLAVE: Se elimina --prebuilt (que requiere una carpeta .vercel/output)
-        # y se añade --prod para forzar el despliegue a producción.
+        
         run: npx vercel deploy --token ${{ secrets.NEWTOK }} --yes --prod
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }} 
